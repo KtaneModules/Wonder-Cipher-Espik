@@ -1,0 +1,89 @@
+/* Manual font */
+@font-face {
+  font-family: 'Special Elite';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Special Elite'), local('SpecialElite-Regular'), url(../font/SpecialElite.ttf);
+}
+
+
+@font-face {
+  font-family: 'Aspire';
+  src: local('Aspire'), local('Aspire'), url(../font/AspireDemibold-YaaO.ttf);
+}
+
+@font-face {
+  font-family: 'English Essay';
+  src: local('English Essay'), local('English Essay'), url(../font/EnglishEssay-K18p.ttf);
+}
+
+@font-face {
+  font-family: 'Frosting for Breakfast';
+  src: local('Frosting for Breakfast'), local('Frosting for Breakfast'), url(../font/Frostingforbreakfast-llnw.otf);
+}
+
+@font-face {
+  font-family: 'Homemade Apple';
+  src: local('Homemade Apple'), local('Homemade Apple'), url(../font/HomemadeApple-9zz5.ttf);
+}
+
+@font-face {
+  font-family: 'Milkmoustachio';
+  src: local('Milkmoustachio'), local('Milkmoustachio'), url(../font/Milkmoustachio-wgGw.ttf);
+}
+
+@font-face {
+  font-family: 'Rolette Qaku';
+  src: local('Rolette Qaku'), local('Rolette Qaku'), url(../font/RolleteqakuRegular-83GA.ttf);
+}
+
+@font-face {
+  font-family: 'Schoolbell';
+  src: local('Schoolbell'), local('Schoolbell'), url(../font/Schoolbell-pMMy.ttf);
+}
+
+@font-face {
+  font-family: 'Variane Script';
+  src: local('Variane Script'), local('Variane Script'), url(../font/VarianeScript-dVXV.ttf);
+}
+
+
+#font-1 {
+  font-family: 'Aspire';
+  font-size: 32px;
+}
+
+#font-2 {
+  font-family: 'English Essay';
+  font-size: 16px;
+}
+
+#font-3 {
+  font-family: 'Frosting for Breakfast';
+  font-size: 28px;
+}
+
+#font-4 {
+  font-family: 'Homemade Apple';
+  font-size: 16px;
+}
+
+#font-5 {
+  font-family: 'Milkmoustachio';
+  font-size: 28px;
+}
+
+#font-6 {
+  font-family: 'Rolette Qaku';
+  font-size: 32px;
+}
+
+#font-7 {
+  font-family: 'Schoolbell';
+  font-size: 20px;
+}
+
+#font-8 {
+  font-family: 'Variane Script';
+  font-size: 32px;
+}
