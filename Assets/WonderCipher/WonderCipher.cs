@@ -740,7 +740,9 @@ public class WonderCipher : MonoBehaviour
         Debug.LogFormat("[Wonder Cipher #{0}] The hexadecimal number after swaps is: {1}", moduleId, hexString);
     }
 	
-	//twitch plays
+
+    // TP Support - made by BigCrunch
+	
     #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"To toggle your screen between the display and the terminal, use the command !{0} toggle | To submit your input in the terminal, use the command !{0} type [ENTIRE CODE] (The code that will be typed must be complete and it must be in the format similar to the terminal. Example: 4K%42 KHS61 0F-W& CKTN3) | To clear the text that was typed, use the command !{0} clear | To submit your answer, use the command !{0} submit";
     #pragma warning restore 414
@@ -764,7 +766,7 @@ public class WonderCipher : MonoBehaviour
 		{
 			if (InputMode == false)
 			{
-				yield return "sendtochaterror You can not submit while you are not on the terminal";
+				yield return "sendtochaterror You can not submit while you are not on the terminal.";
 				yield break;
 			}
 			
@@ -777,7 +779,7 @@ public class WonderCipher : MonoBehaviour
 			yield return null;
 			if (InputMode == false)
 			{
-				yield return "sendtochaterror You can not clear text while you are not on the terminal";
+				yield return "sendtochaterror You can not clear text while you are not on the terminal.";
 				yield break;
 			}
 			
@@ -803,13 +805,13 @@ public class WonderCipher : MonoBehaviour
 			{
 				if (InputMode == false)
 				{
-					yield return "sendtochaterror You can not type while you are not on the terminal";
+					yield return "sendtochaterror You can not type while you are not on the terminal.";
 					yield break;
 				}
 			
 				if (TextInIt == true)
 				{
-					yield return "sendtochaterror The module contains text. Command was not processed";
+					yield return "sendtochaterror The module contains text. Command was not processed.";
 					yield break;
 				}
 			
