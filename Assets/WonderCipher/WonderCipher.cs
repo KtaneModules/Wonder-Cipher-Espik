@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
 
-public class WonderCipher : MonoBehaviour {
+public class WonderCipher : MonoBehaviour
+{
     public KMAudio Audio;
     public KMBombInfo Bomb;
     public KMBombModule Module;
@@ -148,6 +150,7 @@ public class WonderCipher : MonoBehaviour {
                 ScreenText[i].text = givenText.Substring(i, 1);
                 ScreenText[i].color = ScreenColors[0];
             }
+			InputMode = false;
         }
 
         // Switches to the terminal
@@ -163,6 +166,7 @@ public class WonderCipher : MonoBehaviour {
                 ScreenText[i].text = "_";
                 ScreenText[i].color = ScreenColors[1];
             }
+			InputMode = true;
         }
     }
 
@@ -735,4 +739,118 @@ public class WonderCipher : MonoBehaviour {
         hexString = newHexString;
         Debug.LogFormat("[Wonder Cipher #{0}] The hexadecimal number after swaps is: {1}", moduleId, hexString);
     }
+	
+	//twitch plays
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"To toggle your screen between the display and the terminal, use the command !{0} toggle | To submit your input in the terminal, use the command !{0} type [ENTIRE CODE] (The code that will be typed must be complete and it must be in the format similar to the terminal. Example: 4K%42 KHS61 0F-W& CKTN3) | To clear the text that was typed, use the command !{0} clear | To submit your answer, use the command !{0} submit";
+    #pragma warning restore 414
+	
+	string[] ValidNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+	bool TextInIt = false;
+	bool InputMode = false;
+	private string[] Alphabreak = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ".", "&", "-", "_", "#", "$", "%", ":", ";", "*", "+", "<", "=", ">"};
+
+	
+	IEnumerator ProcessTwitchCommand(string command)
+	{
+		string[] parameters = command.Split(' ');
+		if (Regex.IsMatch(command, @"^\s*toggle\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			ViewButton.OnInteract();
+		}
+		
+		if (Regex.IsMatch(command, @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			if (InputMode == false)
+			{
+				yield return "sendtochaterror You can not submit while you are not on the terminal";
+				yield break;
+			}
+			
+			yield return null;
+			SubmitButton.OnInteract();
+		}
+		
+		if (Regex.IsMatch(command, @"^\s*clear\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			if (InputMode == false)
+			{
+				yield return "sendtochaterror You can not clear text while you are not on the terminal";
+				yield break;
+			}
+			
+			if (TextInIt == false)
+			{
+				yield return "sendtochaterror There is no text to delete.";
+				yield break;
+			}
+			
+			for (int x = 0; x < 20; x++)
+			{	
+				DeleteKey.OnInteract();
+				yield return new WaitForSeconds(0.05f);
+			}
+			
+			TextInIt = false;
+		}
+		
+		if (Regex.IsMatch(parameters[0], @"^\s*type\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			if (parameters.Length == 5)
+			{
+				if (InputMode == false)
+				{
+					yield return "sendtochaterror You can not type while you are not on the terminal";
+					yield break;
+				}
+			
+				if (TextInIt == true)
+				{
+					yield return "sendtochaterror The module contains text. Command was not processed";
+					yield break;
+				}
+			
+				for (int x = 0; x < 4; x++)
+				{
+					if (parameters[x+1].Length != 5)
+					{
+						yield return "sendtochaterror The code being sent has a section in which the length is not equal to five characters.";
+						yield break;
+					}
+				}
+				
+				for (int z = 0; z < 4; z++)
+				{
+					for (int q = 0; q < 5; q++)
+					{
+						if (!parameters[z+1][q].ToString().EqualsAny(availableKeys))
+						{
+							yield return "sendtochaterror The code being sent has a section in which the character is not available in the keypad or invalid.";
+							yield break;
+						}
+					}
+				}
+				
+				for (int y = 0; y < 4; y++)
+				{
+					for (int r = 0; r < 5; r++)
+					{
+						for (int v = 0; v < Alphabreak.Count(); v++)
+						{
+							if (Alphabreak[v] == parameters[y+1][r].ToString())
+							{
+								Keys[v].OnInteract();
+								yield return new WaitForSeconds(0.05f);
+								break;
+							}
+						}
+					}
+				}
+				TextInIt = true;
+			}
+		}
+	}
 }

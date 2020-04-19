@@ -1,16 +1,14 @@
 fileFormatVersion: 2
-guid: 038ae0f0136f161408487aae72a1ed45
+guid: d2069ea0ec70df14a8952b2434e8c333
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: unnamed
+    2100000: DefaultMaterial
     2300000: //RootNode
     3300000: //RootNode
-    4300000: arrowHL
-    7400000: Default Take
-    9500000: //RootNode
+    4300000: quarterCircle
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -85,7 +83,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

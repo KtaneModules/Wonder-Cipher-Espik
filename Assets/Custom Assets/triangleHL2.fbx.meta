@@ -1,16 +1,20 @@
 fileFormatVersion: 2
-guid: 12f74585ee087f14e8a3dfd38f12b43e
+guid: e8448fcfe2e052d4daf729372297ff86
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2100000: unnamed
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: quarterCircle
-    7400000: Default Take
-    9500000: //RootNode
+    100000: Camera
+    100002: Lamp
+    100004: triangleHL
+    100006: //RootNode
+    400000: Camera
+    400002: Lamp
+    400004: triangleHL
+    400006: //RootNode
+    2100000: DefaultMaterial
+    2300000: triangleHL
+    3300000: triangleHL
+    4300000: triangleHL
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -85,7 +89,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
