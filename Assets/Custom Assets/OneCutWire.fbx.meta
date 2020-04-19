@@ -1,16 +1,23 @@
 fileFormatVersion: 2
-guid: d9cd8ca510e35574f88700b1141e240d
+guid: 2fc20045a5299a24192af1eece84f2fb
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2100000: unnamed
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Circle
-    7400000: Default Take
-    9500000: //RootNode
+    100000: BareWire
+    100002: //RootNode
+    100004: Wire
+    100006: WirePath
+    400000: BareWire
+    400002: //RootNode
+    400004: Wire
+    400006: WirePath
+    2100000: DefaultMaterial
+    2300000: BareWire
+    2300002: Wire
+    3300000: BareWire
+    3300002: Wire
+    4300000: BareWire
+    4300002: Wire
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -85,7 +92,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
