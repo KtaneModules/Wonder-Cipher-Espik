@@ -210,7 +210,7 @@ public class WonderCipher : MonoBehaviour
             newCharValues[2] = charValues[13];
             newCharValues[3] = charValues[11];
             newCharValues[4] = charValues[0];
-            newCharValues[5] = charValues[15];
+            newCharValues[5] = charValues[14];
             newCharValues[6] = charValues[6];
             newCharValues[7] = charValues[1];
             newCharValues[8] = charValues[19];
