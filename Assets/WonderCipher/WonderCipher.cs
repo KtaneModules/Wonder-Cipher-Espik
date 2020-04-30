@@ -185,6 +185,7 @@ public class WonderCipher : MonoBehaviour
 
         else if (moduleStatus == 1) {
             Debug.LogFormat("[Wonder Cipher #{0}] Strike! The wrong message was entered.", moduleId);
+            Debug.LogFormat("[Wonder Cipher #{0}] You submitted {1}", moduleId, FormatText(enteredText));
             GetComponent<KMBombModule>().HandleStrike();
         }
     }
