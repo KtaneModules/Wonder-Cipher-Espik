@@ -11,6 +11,7 @@ public class WonderCipher : MonoBehaviour
     public KMAudio Audio;
     public KMBombInfo Bomb;
     public KMBombModule Module;
+    public KMColorblindMode ColorblindMode;
 
     public KMSelectable[] Keys;
     public KMSelectable[] RelevantKeys;
@@ -25,6 +26,8 @@ public class WonderCipher : MonoBehaviour
     public Light ModuleLight;
     public Material RedMaterial;
     public Color RedColor;
+
+    public TextMesh ColorblindText;
 
     // Logging info
     private static int moduleIdCounter = 1;
@@ -50,6 +53,8 @@ public class WonderCipher : MonoBehaviour
     private int[] charValues = new int[20];
 
     private bool redLight = false;
+
+    private bool colorblindMode = false;
 
 
     // Ran as bomb loads
@@ -94,6 +99,15 @@ public class WonderCipher : MonoBehaviour
         else
             Debug.LogFormat("[Wonder Cipher #{0}] The light on the module is blue.", moduleId);
 
+        // Colorblind mode
+        colorblindMode = ColorblindMode.ColorblindModeActive;
+        if (colorblindMode == true) {
+            if (redLight == true)
+                ColorblindText.text = "RED";
+
+            else
+                ColorblindText.text = "BLUE";
+        }
 
         ConvertToHex();
         SwapHexPairs();
@@ -745,7 +759,7 @@ public class WonderCipher : MonoBehaviour
     // TP Support - made by BigCrunch
 	
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"To toggle your screen between the display and the terminal, use the command !{0} toggle | To submit your input in the terminal, use the command !{0} type [ENTIRE CODE] (The code that will be typed must be complete and it must be in the format similar to the terminal. Example: 4K%42 KHS61 0F-W& CKTN3) | To clear the text that was typed, use the command !{0} clear | To submit your answer, use the command !{0} submit";
+    private readonly string TwitchHelpMessage = @"To toggle your screen between the display and the terminal, use the command !{0} toggle | To submit your input in the terminal, use the command !{0} type [ENTIRE CODE] (The code that will be typed must be complete and it must be in the format similar to the terminal. Example: 4K%42 KHS61 0F-W& CKTN3) | To clear the text that was typed, use the command !{0} clear | To submit your answer, use the command !{0} submit | To enable colorblind mode, use the command !{0} colorblind";
     #pragma warning restore 414
 	
 	string[] ValidNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -762,8 +776,18 @@ public class WonderCipher : MonoBehaviour
 			yield return null;
 			ViewButton.OnInteract();
 		}
-		
-		if (Regex.IsMatch(command, @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        
+        if (Regex.IsMatch(command, @"^\s*colorblind\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
+            yield return null;
+            colorblindMode = true;
+            if (redLight == true)
+                ColorblindText.text = "RED";
+
+            else
+                ColorblindText.text = "BLUE";
+        }
+
+        if (Regex.IsMatch(command, @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
 		{
 			if (InputMode == false)
 			{
