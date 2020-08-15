@@ -43,6 +43,7 @@ public class WonderCipher : MonoBehaviour
     private readonly string[] availableKeys = { "C", "F", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "W", "X", "Y",
                                                 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", "&", "-", "#", "%", "+", "=" };
 
+    private Dictionary<string, KMSelectable> keysDict = new Dictionary<string, KMSelectable>();
     private string givenText = "";
     private string enteredText = "";
     private string solutionText = "";
@@ -75,6 +76,42 @@ public class WonderCipher : MonoBehaviour
         DeleteKey.OnInteract += delegate () { DeleteKeyPressed(); return false; };
         SubmitButton.OnInteract += delegate () { SubmitButtonPressed(); return false; };
         ViewButton.OnInteract += delegate () { ViewButtonPressed(); return false; };
+
+        keysDict = new Dictionary<string, KMSelectable>()
+        {
+            {"C", RelevantKeys[0]},
+            {"F", RelevantKeys[1]},
+            {"H", RelevantKeys[2]},
+            {"J", RelevantKeys[3]},
+            {"K", RelevantKeys[4]},
+            {"M", RelevantKeys[5]},
+            {"N", RelevantKeys[6]},
+            {"P", RelevantKeys[7]},
+            {"Q", RelevantKeys[8]},
+            {"R", RelevantKeys[9]},
+            {"S", RelevantKeys[10]},
+            {"T", RelevantKeys[11]},
+            {"W", RelevantKeys[12]},
+            {"X", RelevantKeys[13]},
+            {"Y", RelevantKeys[14]},
+            {"0", RelevantKeys[15]},
+            {"1", RelevantKeys[16]},
+            {"2", RelevantKeys[17]},
+            {"3", RelevantKeys[18]},
+            {"4", RelevantKeys[19]},
+            {"5", RelevantKeys[20]},
+            {"6", RelevantKeys[21]},
+            {"7", RelevantKeys[22]},
+            {"8", RelevantKeys[23]},
+            {"9", RelevantKeys[24]},
+            {"@", RelevantKeys[25]},
+            {"&", RelevantKeys[26]},
+            {"-", RelevantKeys[27]},
+            {"#", RelevantKeys[28]},
+            {"%", RelevantKeys[29]},
+            {"+", RelevantKeys[30]},
+            {"=", RelevantKeys[31]}
+        };
 	}
 
     // Sets up the solution
@@ -756,10 +793,10 @@ public class WonderCipher : MonoBehaviour
     }
 	
 
-    // TP Support - made by BigCrunch
+    // TP Support & Force Solve Handler - made by Fang
 	
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"To toggle your screen between the display and the terminal, use the command !{0} toggle | To submit your input in the terminal, use the command !{0} type [ENTIRE CODE] (The code that will be typed must be complete and it must be in the format similar to the terminal. Example: 4K%42 KHS61 0F-W& CKTN3) | To clear the text that was typed, use the command !{0} clear | To submit your answer, use the command !{0} submit | To enable colorblind mode, use the command !{0} colorblind";
+    private readonly string TwitchHelpMessage = @"Submit an answer with !{0} submit <input>, reset input with !{0} reset, enable colorblind mode with !{0} colorblind";
     #pragma warning restore 414
 	
 	string[] ValidNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -770,14 +807,7 @@ public class WonderCipher : MonoBehaviour
 	
 	IEnumerator ProcessTwitchCommand(string command)
 	{
-		string[] parameters = command.Split(' ');
-		if (Regex.IsMatch(command, @"^\s*toggle\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
-		{
-			yield return null;
-			ViewButton.OnInteract();
-		}
-        
-        if (Regex.IsMatch(command, @"^\s*colorblind\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
+        if (Regex.IsMatch(command, @"^(?:colorblind)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
             yield return null;
             colorblindMode = true;
             if (redLight == true)
@@ -786,98 +816,71 @@ public class WonderCipher : MonoBehaviour
             else
                 ColorblindText.text = "BLUE";
         }
+        else if (Regex.IsMatch(command, @"^(?:reset|clear)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
+            yield return null;
+            while (enteredText != "") {
+                if (!InputMode) ViewButton.OnInteract();
+                DeleteKey.OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+            ViewButton.OnInteract();
+        }
+        else {
+            Match m = Regex.Match(command, @"^(?:submit (.+))$", RegexOptions.IgnoreCase);
+            if (m.Success) {
+                command = m.Groups[1].ToString().Replace(" ", "");
+                if (command.Length != 20) {
+                    yield return "sendtochaterror Invalid input length.";
+                    yield break;
+                }
+                else {
+                    char[] inputs = command.ToCharArray();
+                    List<KMSelectable> keysToPress = new List<KMSelectable>();
 
-        if (Regex.IsMatch(command, @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
-		{
-			if (InputMode == false)
-			{
-				yield return "sendtochaterror You can not submit while you are not on the terminal.";
-				yield break;
-			}
-			
-			yield return null;
-			SubmitButton.OnInteract();
-		}
-		
-		if (Regex.IsMatch(command, @"^\s*clear\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
-		{
-			yield return null;
-			if (InputMode == false)
-			{
-				yield return "sendtochaterror You can not clear text while you are not on the terminal.";
-				yield break;
-			}
-			
-			if (TextInIt == false)
-			{
-				yield return "sendtochaterror There is no text to delete.";
-				yield break;
-			}
-			
-			for (int x = 0; x < 20; x++)
-			{	
-				DeleteKey.OnInteract();
-				yield return new WaitForSeconds(0.05f);
-			}
-			
-			TextInIt = false;
-		}
-		
-		if (Regex.IsMatch(parameters[0], @"^\s*type\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
-		{
-			yield return null;
-			if (parameters.Length == 5)
-			{
-				if (InputMode == false)
-				{
-					yield return "sendtochaterror You can not type while you are not on the terminal.";
-					yield break;
-				}
-			
-				if (TextInIt == true)
-				{
-					yield return "sendtochaterror The module contains text. Command was not processed.";
-					yield break;
-				}
-			
-				for (int x = 0; x < 4; x++)
-				{
-					if (parameters[x+1].Length != 5)
-					{
-						yield return "sendtochaterror The code being sent has a section in which the length is not equal to five characters.";
-						yield break;
-					}
-				}
-				
-				for (int z = 0; z < 4; z++)
-				{
-					for (int q = 0; q < 5; q++)
-					{
-						if (!parameters[z+1][q].ToString().EqualsAny(availableKeys))
-						{
-							yield return "sendtochaterror The code being sent has a section in which the character is not available in the keypad or invalid.";
-							yield break;
-						}
-					}
-				}
-				
-				for (int y = 0; y < 4; y++)
-				{
-					for (int r = 0; r < 5; r++)
-					{
-						for (int v = 0; v < Alphabreak.Count(); v++)
-						{
-							if (Alphabreak[v] == parameters[y+1][r].ToString())
-							{
-								Keys[v].OnInteract();
-								yield return new WaitForSeconds(0.05f);
-								break;
-							}
-						}
-					}
-				}
-				TextInIt = true;
-			}
-		}
+                    foreach (char input in inputs)
+                    {
+                        if (!keysDict.ContainsKey(input.ToString()))
+                        {
+                            yield return null;
+                            yield return "sendtochaterror Input contains key that is not pressable on the module.";
+                            yield break;
+                        }
+                        keysToPress.Add(keysDict[input.ToString()]);
+                    }
+                    keysToPress.Add(SubmitButton);
+                    if (!InputMode) ViewButton.OnInteract();
+                    while (enteredText != "") {
+                        yield return null; 
+                        DeleteKey.OnInteract();
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    yield return null;
+                    yield return keysToPress.ToArray();
+                };
+            }
+            else {
+                yield return "sendtochaterror Invalid command.";
+                yield break;
+            }
+        }
+
 	}
+    IEnumerator TwitchHandleForcedSolve() {
+            yield return null;
+            if (!InputMode) {
+                yield return null;
+                ViewButton.OnInteract();
+            }
+            while (enteredText != "") {
+                yield return null; 
+                DeleteKey.OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+            for (int i = 0; i < 20; i++) {
+                yield return null;
+                keysDict[solutionText[i].ToString()].OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+            SubmitButton.OnInteract();
+    }
 }
