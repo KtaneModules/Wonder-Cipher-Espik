@@ -793,7 +793,7 @@ public class WonderCipher : MonoBehaviour
     }
 	
 
-    // TP Support & Force Solve Handler - made by Fang
+    // Twitch Plays support - made by Fang
 	
     #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"Submit an answer with !{0} submit <input>, reset input with !{0} reset, enable colorblind mode with !{0} colorblind";
@@ -830,7 +830,7 @@ public class WonderCipher : MonoBehaviour
             if (m.Success) {
                 command = m.Groups[1].ToString().Replace(" ", "");
                 if (command.Length != 20) {
-                    yield return "sendtochaterror Invalid input length.";
+                    yield return "sendtochaterror The input length is invalid.";
                     yield break;
                 }
                 else {
@@ -842,7 +842,7 @@ public class WonderCipher : MonoBehaviour
                         if (!keysDict.ContainsKey(input.ToString()))
                         {
                             yield return null;
-                            yield return "sendtochaterror Input contains key that is not pressable on the module.";
+                            yield return "sendtochaterror The input contains a key that is not pressable on the module.";
                             yield break;
                         }
                         keysToPress.Add(keysDict[input.ToString()]);
