@@ -14,7 +14,7 @@ MonoBehaviour:
   id: WonderCipher
   title: Wonder Cipher
   author: Espik
-  description: 'Wonder Cipher v1.3
+  description: 'Wonder Cipher v1.301
 
     "What happens is a mystery!"
 
@@ -26,6 +26,6 @@ MonoBehaviour:
 
 
     Source Code: https://github.com/Espik/Wonder-Cipher'
-  version: v1.3
+  version: v1.301
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 8755f21fc8970de4abfb84012d95adb0, type: 3}
