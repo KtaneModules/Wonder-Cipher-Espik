@@ -6,8 +6,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using KModkit;
 
-public class WonderCipher : MonoBehaviour
-{
+public class WonderCipher : MonoBehaviour {
     public KMAudio Audio;
     public KMBombInfo Bomb;
     public KMBombModule Module;
@@ -112,10 +111,14 @@ public class WonderCipher : MonoBehaviour
             {"+", RelevantKeys[30]},
             {"=", RelevantKeys[31]}
         };
-	}
+    }
 
-    // Sets up the solution
+    // Sets up the solution and preps displays
     private void Start() {
+        // Scales the module light to account for bomb size
+        float scalar = transform.lossyScale.x;
+        ModuleLight.range *= scalar;
+
         // Displays the display text on the screen
         GenerateStartingMessage();
         Debug.LogFormat("[Wonder Cipher #{0}] The given message is {1}", moduleId, FormatText(givenText));
@@ -158,7 +161,7 @@ public class WonderCipher : MonoBehaviour
     // Any key entered
     private void KeyPressed(int i) {
         Keys[i].AddInteractionPunch(0.25f);
-        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, gameObject.transform);
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Keys[i].transform);
     }
 
     // Relevant key entered
@@ -188,12 +191,12 @@ public class WonderCipher : MonoBehaviour
         }
     }
 
-    
+
     // View button pressed
     private void ViewButtonPressed() {
         ViewButton.AddInteractionPunch();
-        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, gameObject.transform);
-        
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, ViewButton.transform);
+
         // Switches to the displayed text
         if (moduleStatus == 1) {
             moduleStatus = 0;
@@ -201,7 +204,7 @@ public class WonderCipher : MonoBehaviour
                 ScreenText[i].text = givenText.Substring(i, 1);
                 ScreenText[i].color = ScreenColors[0];
             }
-			InputMode = false;
+            InputMode = false;
         }
 
         // Switches to the terminal
@@ -217,7 +220,7 @@ public class WonderCipher : MonoBehaviour
                 ScreenText[i].text = "_";
                 ScreenText[i].color = ScreenColors[1];
             }
-			InputMode = true;
+            InputMode = true;
         }
     }
 
@@ -225,11 +228,11 @@ public class WonderCipher : MonoBehaviour
     // Submit button pressed
     private void SubmitButtonPressed() {
         SubmitButton.AddInteractionPunch();
-        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, gameObject.transform);
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, SubmitButton.transform);
 
         if (enteredText == solutionText && moduleStatus == 1) {
             Debug.LogFormat("[Wonder Cipher #{0}] Module solved!", moduleId);
-            GetComponent<KMBombModule>().HandlePass();
+            Module.HandlePass();
             moduleStatus = 2;
             Audio.PlaySoundAtTransform("WonderCipher_Solve", transform);
         }
@@ -237,7 +240,7 @@ public class WonderCipher : MonoBehaviour
         else if (moduleStatus == 1) {
             Debug.LogFormat("[Wonder Cipher #{0}] Strike! The wrong message was entered.", moduleId);
             Debug.LogFormat("[Wonder Cipher #{0}] You submitted {1}", moduleId, FormatText(enteredText));
-            GetComponent<KMBombModule>().HandleStrike();
+            Module.HandleStrike();
         }
     }
 
@@ -369,10 +372,16 @@ public class WonderCipher : MonoBehaviour
     // Formats the on-screen text
     private string FormatText(string code) {
         string str = "";
-        str += code.Substring(0, 5) + " ";
-        str += code.Substring(5, 5) + " ";
-        str += code.Substring(10, 5) + " ";
-        str += code.Substring(15, 5);
+        int ct = 0;
+        foreach (char c in code) {
+            str += c;
+            ct++;
+            if (ct == 5) {
+                ct = 0;
+                str += " ";
+            }
+        }
+        str = str.Trim();
         return str;
     }
 
@@ -791,39 +800,44 @@ public class WonderCipher : MonoBehaviour
         hexString = newHexString;
         Debug.LogFormat("[Wonder Cipher #{0}] The hexadecimal number after swaps is: {1}", moduleId, hexString);
     }
-	
+
 
     // Twitch Plays support - made by Fang
-	
-    #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"Submit an answer with !{0} submit <input>, reset input with !{0} reset, enable colorblind mode with !{0} colorblind";
-    #pragma warning restore 414
-	
-	string[] ValidNumbers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-	bool TextInIt = false;
-	bool InputMode = false;
-	private string[] Alphabreak = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", ".", "&", "-", "_", "#", "$", "%", ":", ";", "*", "+", "<", "=", ">"};
 
-	
-	IEnumerator ProcessTwitchCommand(string command)
-	{
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"Submit an answer with !{0} submit <input>, reset input with !{0} reset, toggle colorblind mode with !{0} colorblind";
+#pragma warning restore 414
+
+    bool InputMode = false;
+
+    IEnumerator ProcessTwitchCommand(string command) {
         if (Regex.IsMatch(command, @"^(?:colorblind)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
             yield return null;
-            colorblindMode = true;
-            if (redLight == true)
-                ColorblindText.text = "RED";
+            colorblindMode = !colorblindMode;
+            if (colorblindMode == true) {
+                if (redLight == true)
+                    ColorblindText.text = "RED";
 
+                else
+                    ColorblindText.text = "BLUE";
+            }
             else
-                ColorblindText.text = "BLUE";
+                ColorblindText.text = "";
         }
         else if (Regex.IsMatch(command, @"^(?:reset|clear)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
             yield return null;
-            while (enteredText != "") {
-                if (!InputMode) ViewButton.OnInteract();
-                DeleteKey.OnInteract();
-                yield return new WaitForSeconds(0.1f);
+            if (enteredText != "") {
+                if (!InputMode) {
+                    ViewButton.OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                while (enteredText != "") {
+                    DeleteKey.OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
             }
-            ViewButton.OnInteract();
+            if (InputMode)
+                ViewButton.OnInteract();
         }
         else {
             Match m = Regex.Match(command, @"^(?:submit (.+))$", RegexOptions.IgnoreCase);
@@ -837,10 +851,8 @@ public class WonderCipher : MonoBehaviour
                     char[] inputs = command.ToCharArray();
                     List<KMSelectable> keysToPress = new List<KMSelectable>();
 
-                    foreach (char input in inputs)
-                    {
-                        if (!keysDict.ContainsKey(input.ToString()))
-                        {
+                    foreach (char input in inputs) {
+                        if (!keysDict.ContainsKey(input.ToString())) {
                             yield return null;
                             yield return "sendtochaterror The input contains a key that is not pressable on the module.";
                             yield break;
@@ -848,13 +860,15 @@ public class WonderCipher : MonoBehaviour
                         keysToPress.Add(keysDict[input.ToString()]);
                     }
                     keysToPress.Add(SubmitButton);
-                    if (!InputMode) ViewButton.OnInteract();
+                    yield return null;
+                    if (!InputMode) {
+                        ViewButton.OnInteract();
+                        yield return new WaitForSeconds(0.1f);
+                    }
                     while (enteredText != "") {
-                        yield return null; 
                         DeleteKey.OnInteract();
                         yield return new WaitForSeconds(0.1f);
                     }
-                    yield return null;
                     yield return keysToPress.ToArray();
                 };
             }
@@ -864,23 +878,22 @@ public class WonderCipher : MonoBehaviour
             }
         }
 
-	}
+    }
     IEnumerator TwitchHandleForcedSolve() {
-            yield return null;
-            if (!InputMode) {
-                yield return null;
-                ViewButton.OnInteract();
-            }
-            while (enteredText != "") {
-                yield return null; 
-                DeleteKey.OnInteract();
-                yield return new WaitForSeconds(0.1f);
-            }
-            for (int i = 0; i < 20; i++) {
-                yield return null;
-                keysDict[solutionText[i].ToString()].OnInteract();
-                yield return new WaitForSeconds(0.1f);
-            }
-            SubmitButton.OnInteract();
+        yield return null;
+        if (!InputMode) {
+            ViewButton.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        while (!solutionText.StartsWith(enteredText)) {
+            DeleteKey.OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        int start = enteredText.Length;
+        for (int i = start; i < 20; i++) {
+            keysDict[solutionText[i].ToString()].OnInteract();
+            yield return new WaitForSeconds(0.1f);
+        }
+        SubmitButton.OnInteract();
     }
 }
